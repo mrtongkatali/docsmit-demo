@@ -32,7 +32,7 @@ export const getToken = createAsyncThunk(
   async (_, { dispatch }) => {
     try {
       const response = await fetchWithResponse("/api/docsmit/auth");
-      dispatch(setUser(response));
+      dispatch(setUser(response.data));
     } catch (error: any) {
       throw new Error(error.response.data.message);
     }
