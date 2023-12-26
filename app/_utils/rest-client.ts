@@ -19,7 +19,21 @@ export const postWithResponse = async (url: string, payload?: any): Promise<any>
         }
     
         return await response.json();
-    } catch (e:any) {
+    } catch (e: any) {
         throw new Error(e.message);
+    }
+}
+
+export const fetchWithResponse = async (url: string): Promise<any> => {
+    try {
+        const response = await fetch(url)
+
+        if (!response.ok) {
+            throw new Error(response.statusText)
+        }
+
+        return await response.json()
+    } catch (e: any) {
+        throw new Error(e.message)
     }
 }
