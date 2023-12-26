@@ -50,17 +50,14 @@ export const user = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(getToken.pending, (state) => {
-      // console.log("authenticatedUser.loading - ")
       state.loading = true;
     });
 
-    builder.addCase(getToken.fulfilled, (state, _) => {
-      // console.log("authenticatedUser.fullfilled - ", action.payload)
-      // state.data.accessToken = action.payload.accessToken
+    builder.addCase(getToken.fulfilled, (state) => {
       state.loading = false;
     });
 
-    builder.addCase(getToken.rejected, (state, _) => {
+    builder.addCase(getToken.rejected, (state) => {
       state.loading = false;
     });
   },
