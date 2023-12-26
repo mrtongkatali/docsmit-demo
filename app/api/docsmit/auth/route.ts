@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 // import { createHash } from "crypto"
-import { getDocsmitEndpoint, postWithResponse } from "@/app/_utils/rest-client"
+import { getDocsmitEndpoint, postWithResponse } from "@/app/_utils/restClient"
 
 export async function GET() {
     try {
