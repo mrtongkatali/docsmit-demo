@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import {
   getDocsmitEndpoint,
   fetchWithResponse,
-  fetchWithResponseTest,
 } from "@/app/_utils/restClient";
 
 export async function GET() {

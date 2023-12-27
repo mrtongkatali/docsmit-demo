@@ -1,5 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getDocsmitEndpoint, fetchWithResponse } from "@/app/_utils/restClient";
+import { fetchWithResponse } from "@/app/_utils/restClient";
 import { RootState } from "../store";
 
 type User = {
@@ -44,9 +44,8 @@ export const deleteToken = createAsyncThunk(
   "auth/deleteToken",
   async (
     _,
-    { dispatch, getState }: { dispatch: any; getState: () => RootState }
+    { dispatch, getState }: { dispatch: any; getState: () => RootState } // TODO: to fix TS error
   ) => {
-    // to fix TS error
     const state = getState();
 
     dispatch(clearUser());
