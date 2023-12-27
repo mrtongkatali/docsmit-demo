@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 // import { createHash } from "crypto"
-import { getDocsmitEndpoint, postWithResponse } from "@/app/_utils/restClient";
+import { getDocsmitEndpoint, fetchWithResponse } from "@/app/_utils/restClient";
 
 export async function GET() {
   try {
@@ -16,12 +16,25 @@ export async function GET() {
       softwareID,
     };
 
-    const data = await postWithResponse(getDocsmitEndpoint("token"), payload);
+    const data = await fetchWithResponse(getDocsmitEndpoint("token"), "POST", payload);
 
     return NextResponse.json({
       data,
     });
   } catch (e) {
     return new NextResponse("Unauthorized", { status: 401 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const softwareID: string = process.env.DOCSMIT_API_SOFTWARE_ID || "";
+    const data = await fetchWithResponse(getDocsmitEndpoint("token"), "DELETE", { softwareID });
+
+    return NextResponse.json({
+      data,
+    });
+  } catch (e) {
+    return new NextResponse("An error has occured. Please contact admin.", { status: 500 });
   }
 }

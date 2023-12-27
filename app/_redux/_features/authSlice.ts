@@ -1,5 +1,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { fetchWithResponse } from "@/app/_utils/restClient";
+import { getDocsmitEndpoint, fetchWithResponse } from "@/app/_utils/restClient";
+import { RootState } from "../store";
 
 type User = {
   userID: number;
@@ -31,7 +32,24 @@ export const getToken = createAsyncThunk(
   "auth/getToken",
   async (_, { dispatch }) => {
     try {
-      const response = await fetchWithResponse("/api/docsmit/auth");
+      const response = await fetchWithResponse("/api/docsmit/auth", "GET");
+      dispatch(setUser(response.data));
+    } catch (error: any) {
+      throw new Error(error.response.data.message);
+    }
+  }
+);
+
+export const deleteToken = createAsyncThunk(
+  "auth/deleteToken",
+  async (_, { dispatch, getState }: { dispatch: any, getState: () => RootState }) => { // to fix TS error
+    const state = getState()
+
+    dispatch(clearUser());
+
+    try {
+      // console.log("xxx - ", getDocsmitEndpoint("token"), process.env.DOCSMIT_API_ENDPOINT);
+      const response = await fetchWithResponse(getDocsmitEndpoint("token"), "DELETE", null, state.auth.data.user.token);
       dispatch(setUser(response.data));
     } catch (error: any) {
       throw new Error(error.response.data.message);
@@ -46,6 +64,9 @@ export const user = createSlice({
   reducers: {
     setUser: (state, action: PayloadAction<User>) => {
       state.data.user = action.payload;
+    },
+    clearUser: (state) => {
+      state.data.user = initialState.data.user;
     },
   },
   extraReducers: (builder) => {
@@ -64,4 +85,4 @@ export const user = createSlice({
 });
 
 export default user.reducer;
-export const { setUser } = user.actions;
+export const { setUser, clearUser } = user.actions;

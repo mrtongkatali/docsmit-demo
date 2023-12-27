@@ -1,4 +1,11 @@
+"use client";
+
+import { useAppSelector } from "../_utils/useTypedSelector";
+import { RootState } from "../_redux/store";
+
 export default function NavBar() {
+  const authState = useAppSelector((state: RootState) => state.auth);
+
   return (
     <div className="bg-gray-100">
       <nav className="bg-blue-500 p-4">
@@ -10,11 +17,15 @@ export default function NavBar() {
                   Home
                 </a>
               </li>
-              <li>
+              {
+                authState.data.user.token
+                ? 
+                <li>
                 <a href="/messages" className="text-white">
                   Messages
                 </a>
-              </li>
+              </li> : ""
+              }
             </ul>
           </div>
         </div>

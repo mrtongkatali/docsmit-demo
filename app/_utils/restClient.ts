@@ -5,15 +5,27 @@ export const getDocsmitEndpoint = (path: string): string => {
   return `${DOCSMIT_API_ENDPOINT}/${path}`;
 };
 
-export const postWithResponse = async (
-  url: string,
-  payload?: any
-): Promise<any> => {
+type RequestMethod = "GET" | "POST" | "DELETE"
+
+export const fetchWithResponse = async (url: string, method: RequestMethod, payload?: any, token?: string): Promise<any> => {
   try {
+    let additionalHeaders = {};
+
+    if (token) {
+      const encodedToken = Buffer.from(`${token}:`, 'utf-8').toString('base64');
+      additionalHeaders = {
+        // "Authorization": "Basic " + Buffer.from(`${token}:`, 'utf-8').toString('base64') + "="
+        "Authorization": `Basic ${encodedToken}=`
+      };
+
+      console.log("additionalHeaders - ", additionalHeaders);
+    }
+
     const response = await fetch(url, {
-      method: "POST",
+      method,
       headers: {
         "Content-Type": "application/json",
+        ...additionalHeaders
       },
       body: payload ? JSON.stringify(payload) : undefined,
     });
@@ -24,20 +36,7 @@ export const postWithResponse = async (
 
     return await response.json();
   } catch (e: any) {
-    throw new Error(e.message);
-  }
-};
-
-export const fetchWithResponse = async (url: string): Promise<any> => {
-  try {
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-
-    return await response.json();
-  } catch (e: any) {
+    console.log("e.message - ", e.message);
     throw new Error(e.message);
   }
 };

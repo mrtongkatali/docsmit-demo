@@ -2,25 +2,8 @@
 
 import { useAppDispatch } from "./_utils/useTypedSelector";
 import { useAppSelector } from "./_utils/useTypedSelector";
-import { getToken } from "./_redux/_features/auth-slice";
+import { getToken, deleteToken } from "./_redux/_features/authSlice";
 import { RootState } from "./_redux/store";
-
-type LoggedUserProps = {
-  name: string;
-};
-
-const LoggedUser: React.FC<LoggedUserProps> = ({ name }) => {
-  return (
-    <>
-      <h3>
-        Howdy, {name}!
-        <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-sm ml-2">
-          Logout
-        </button>
-      </h3>
-    </>
-  );
-};
 
 export default function Index() {
   const dispatch = useAppDispatch();
@@ -28,6 +11,10 @@ export default function Index() {
 
   const authenticateUser = async () => {
     dispatch(getToken());
+  };
+
+  const clearToken = () => {
+    dispatch(deleteToken());
   };
 
   return (
@@ -39,10 +26,19 @@ export default function Index() {
           onClick={authenticateUser}
           disabled={authState.loading}
         >
-          {!authState.loading ? "Get Test Token" : "Loading"}
+          {!authState.loading ? "Get the token to begin" : "Loading"}
         </button>
       ) : (
-        <LoggedUser name={authState.data.user.name} />
+        // <LoggedUser name={authState.data.user.name} />
+        <h3>
+          Howdy, {authState.data.user.name}!
+          <button
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-sm ml-2"
+            onClick={clearToken}
+          >
+            Logout
+          </button>
+        </h3>
       )}
     </div>
   );
