@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 // import { createHash } from "crypto"
-import { getDocsmitEndpoint, fetchWithResponse } from "@/app/_utils/restClient";
+import {
+  getDocsmitEndpoint,
+  fetchWithResponse,
+  fetchWithResponseTest,
+} from "@/app/_utils/restClient";
 
 export async function GET() {
   try {
@@ -16,7 +20,11 @@ export async function GET() {
       softwareID,
     };
 
-    const data = await fetchWithResponse(getDocsmitEndpoint("token"), "POST", payload);
+    const data = await fetchWithResponse(
+      getDocsmitEndpoint("token"),
+      "POST",
+      payload
+    );
 
     return NextResponse.json({
       data,
@@ -26,15 +34,28 @@ export async function GET() {
   }
 }
 
-export async function DELETE(request: Request) {
+export async function DELETE(req: Request) {
   try {
+    const request = await req.json();
+
+    if (!request.token) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const softwareID: string = process.env.DOCSMIT_API_SOFTWARE_ID || "";
-    const data = await fetchWithResponse(getDocsmitEndpoint("token"), "DELETE", { softwareID });
+    const data = await fetchWithResponse(
+      getDocsmitEndpoint("token"),
+      "DELETE",
+      { softwareID },
+      request.token
+    );
 
     return NextResponse.json({
       data,
     });
   } catch (e) {
-    return new NextResponse("An error has occured. Please contact admin.", { status: 500 });
+    return new NextResponse("An error has occured. Please contact admin.", {
+      status: 500,
+    });
   }
 }

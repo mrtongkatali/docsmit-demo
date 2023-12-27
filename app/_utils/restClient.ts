@@ -5,27 +5,36 @@ export const getDocsmitEndpoint = (path: string): string => {
   return `${DOCSMIT_API_ENDPOINT}/${path}`;
 };
 
-type RequestMethod = "GET" | "POST" | "DELETE"
+type RequestMethod = "GET" | "POST" | "DELETE";
 
-export const fetchWithResponse = async (url: string, method: RequestMethod, payload?: any, token?: string): Promise<any> => {
+const validateResponse = (response: string) => {
+  try {
+    return JSON.parse(response);
+  } catch (e) {
+    return response;
+  }
+};
+
+export const fetchWithResponse = async (
+  url: string,
+  method: RequestMethod,
+  payload?: any,
+  token?: string
+): Promise<any> => {
   try {
     let additionalHeaders = {};
 
     if (token) {
-      const encodedToken = Buffer.from(`${token}:`, 'utf-8').toString('base64');
       additionalHeaders = {
-        // "Authorization": "Basic " + Buffer.from(`${token}:`, 'utf-8').toString('base64') + "="
-        "Authorization": `Basic ${encodedToken}=`
+        Authorization: "Basic " + Buffer.from(`${token}:`).toString("base64"),
       };
-
-      console.log("additionalHeaders - ", additionalHeaders);
     }
 
     const response = await fetch(url, {
       method,
       headers: {
         "Content-Type": "application/json",
-        ...additionalHeaders
+        ...additionalHeaders,
       },
       body: payload ? JSON.stringify(payload) : undefined,
     });
@@ -34,9 +43,10 @@ export const fetchWithResponse = async (url: string, method: RequestMethod, payl
       throw new Error(response.statusText);
     }
 
-    return await response.json();
-  } catch (e: any) {
-    console.log("e.message - ", e.message);
+    const rawResponse = await response.text();
+
+    return validateResponse(rawResponse);
+  } catch (e) {
     throw new Error(e.message);
   }
 };

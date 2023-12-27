@@ -42,14 +42,19 @@ export const getToken = createAsyncThunk(
 
 export const deleteToken = createAsyncThunk(
   "auth/deleteToken",
-  async (_, { dispatch, getState }: { dispatch: any, getState: () => RootState }) => { // to fix TS error
-    const state = getState()
+  async (
+    _,
+    { dispatch, getState }: { dispatch: any; getState: () => RootState }
+  ) => {
+    // to fix TS error
+    const state = getState();
 
     dispatch(clearUser());
 
     try {
-      // console.log("xxx - ", getDocsmitEndpoint("token"), process.env.DOCSMIT_API_ENDPOINT);
-      const response = await fetchWithResponse(getDocsmitEndpoint("token"), "DELETE", null, state.auth.data.user.token);
+      const response = await fetchWithResponse("/api/docsmit/auth", "DELETE", {
+        token: state.auth.data.user.token,
+      });
       dispatch(setUser(response.data));
     } catch (error: any) {
       throw new Error(error.response.data.message);

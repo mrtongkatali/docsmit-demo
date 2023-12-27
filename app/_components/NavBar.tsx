@@ -17,15 +17,15 @@ export default function NavBar() {
                   Home
                 </a>
               </li>
-              {
-                authState.data.user.token
-                ? 
+              {authState.data.user.token ? (
                 <li>
-                <a href="/messages" className="text-white">
-                  Messages
-                </a>
-              </li> : ""
-              }
+                  <a href="/messages" className="text-white">
+                    Messages
+                  </a>
+                </li>
+              ) : (
+                ""
+              )}
             </ul>
           </div>
         </div>
