@@ -16,6 +16,8 @@
   }
 }
 
+/* Custom Overrides */
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -53,4 +55,9 @@ input[type="password"] {
   color: #e53e3e; /* Red color for error messages */
   font-size: 0.875rem; /* Adjust font size */
   margin-top: 0.25rem; /* Add space between input and error message */
+}
+
+
+.small-link {
+  font-size: 0.8rem;
 }

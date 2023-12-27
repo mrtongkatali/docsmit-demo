@@ -44,7 +44,7 @@ export const deleteToken = createAsyncThunk(
   "auth/deleteToken",
   async (
     _,
-    { dispatch, getState }: { dispatch: any; getState: () => RootState } // TODO: to fix TS error
+    { dispatch, getState }: { dispatch: any; getState: () => RootState } // TODO: fix TS error
   ) => {
     const state = getState();
 
