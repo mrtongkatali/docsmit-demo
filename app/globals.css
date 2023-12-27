@@ -25,3 +25,32 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+input::placeholder {
+  /* Set placeholder text color */
+  color: #a0aec0; /* Tailwind's gray-400 */
+}
+
+input:-ms-input-placeholder {
+  /* For Microsoft Edge */
+  color: #a0aec0;
+}
+
+input::-ms-input-placeholder {
+  /* For Microsoft Edge */
+  color: #a0aec0;
+}
+
+/* Set text color inside input boxes */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  /* Set text color */
+  color: #000; /* Black color for text */
+}
+
+.error-message {
+  color: #e53e3e; /* Red color for error messages */
+  font-size: 0.875rem; /* Adjust font size */
+  margin-top: 0.25rem; /* Add space between input and error message */
+}

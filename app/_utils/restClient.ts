@@ -4,7 +4,7 @@ export type CustomRequestHeaders = {
   "Content-Type": string;
   Authorization?: string;
   // To define others once needed
-}
+};
 
 export const DOCSMIT_API_ENDPOINT: string =
   process.env.DOCSMIT_API_ENDPOINT || "";
@@ -21,24 +21,24 @@ export const validateResponse = (response: string) => {
   }
 };
 
-export const injectCustomHeader = (token?:string) => {
-  let authHeader = {}
+export const injectCustomHeader = (token?: string) => {
+  let authHeader = {};
 
   const defaultHeader: CustomRequestHeaders = {
     "Content-Type": "application/json",
-  }
+  };
 
   if (token) {
     authHeader = {
       Authorization: "Basic " + Buffer.from(`${token}:`).toString("base64"),
-    }
+    };
   }
 
   return {
     ...defaultHeader,
     ...authHeader,
-  }
-}
+  };
+};
 
 export const fetchWithResponse = async (
   url: string,

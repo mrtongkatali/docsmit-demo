@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 // import { createHash } from "crypto"
-import {
-  getDocsmitEndpoint,
-  fetchWithResponse,
-} from "@/app/_utils/restClient";
+import { getDocsmitEndpoint, fetchWithResponse } from "@/app/_utils/restClient";
 
 export async function GET() {
   try {
