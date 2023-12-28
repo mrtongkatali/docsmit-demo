@@ -68,6 +68,8 @@ export const fetchWithResponse = async (
   token?: string
 ): Promise<any> => {
   try {
+    console.log("[DEBUG] REQUEST HEADER - ", injectCustomHeader(token));
+
     const response = await fetch(url, {
       method,
       headers: injectCustomHeader(token),
@@ -85,3 +87,43 @@ export const fetchWithResponse = async (
     throw new Error(e.message);
   }
 };
+
+export const multiPartFormPostWithResponse = async (
+  url: string,
+  requestBody: FormData,
+  token?: string
+): Promise<any> => {
+  let additionalHeader = {};
+
+  if (token) {
+    additionalHeader = {
+      Authorization: "Basic " + Buffer.from(`${token}:`).toString("base64"),
+    };
+  }
+  console.log("[DEBUG] REQUEST BODY - ", requestBody, additionalHeader);
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "multipart/form-data",
+      ...additionalHeader,
+    },
+    body: requestBody ? requestBody : undefined,
+  });
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const rawResponse = await response.text();
+
+  return validateResponse(rawResponse);
+};
+
+export async function multipar11tFormPost(request: Request) {
+  const formData = await request.formData();
+
+  const response = await fetch("YOUR_API_ENDPOINT", {
+    method: "POST",
+    body: formData,
+  });
+}

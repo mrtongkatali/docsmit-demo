@@ -1,11 +1,14 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { fetchWithResponse } from "@/app/_utils/restClient";
+import { convertFileToBase64 } from "@/app/_helpers/utils";
+import {
+  fetchWithResponse,
+} from "@/app/_utils/restClient";
 import { RootState } from "../store";
 
 export type CreateMessagePayload = {
   title: string;
   address: string;
-  file: File | null;
+  file?: File | null;
 };
 
 export type Message = {
@@ -49,6 +52,27 @@ export const createMessage = createAsyncThunk(
       );
 
       const messageID = response.data.messageID;
+
+      if (payload.file) {
+        const fileAttachment = await convertFileToBase64(payload.file);
+        console.log("fileAttachment - ", fileAttachment);
+        const newPayload = {
+          token,
+          messageID,
+          fileName: payload.file.name,
+          mimeType: payload.file.type,
+          fileAttachment,
+        }
+
+        const fileUploadResponse = await fetchWithResponse(
+          "/api/docsmit/message/documentUpload",
+          "POST",
+          newPayload,
+          token
+        );
+
+        console.log("fileUploadResponse from slice - ", fileUploadResponse);
+      }
 
       setTimeout(() => {
         thunkAPI.dispatch(setFileIsLoading(false));

@@ -3,7 +3,7 @@ import { useDropzone } from "react-dropzone";
 import { RootState } from "../_redux/store";
 import { useAppDispatch, useAppSelector } from "../_utils/useTypedSelector";
 import * as yup from "yup";
-import { useFormik } from "formik";
+import { useFormik, useFormikContext } from "formik";
 import {
   CreateMessagePayload,
   createMessage,
@@ -21,7 +21,6 @@ export default function UploadForm() {
   const { isFileLoading, loading } = messageState;
 
   const {
-    acceptedFiles,
     getRootProps,
     getInputProps,
     isDragActive,
@@ -54,8 +53,8 @@ export default function UploadForm() {
 
   const formik = useFormik({
     initialValues: {
-      title: "",
-      address: "",
+      title: "123",
+      address: "123",
       file: null,
     },
     validationSchema,
@@ -89,6 +88,11 @@ export default function UploadForm() {
       alert("Mail has been sent!");
     },
   });
+
+  const removeAttachment = () => {
+    formik.setFieldValue("file", null);
+    setUploadedFiles([]);
+  };
 
   return (
     <>
@@ -171,7 +175,10 @@ export default function UploadForm() {
                       {isFileLoading ? (
                         <span className="text-green-500">[Uploading...]</span>
                       ) : (
-                        <a className="ml-1 text-red-500 focus:outline-none small-link">
+                        <a
+                          className="ml-1 text-red-500 focus:outline-none small-link cursor-pointer"
+                          onClick={removeAttachment}
+                        >
                           Remove
                         </a>
                       )}
