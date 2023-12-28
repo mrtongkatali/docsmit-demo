@@ -19,12 +19,6 @@ type Auth = {
   error: string | null;
 };
 
-export type CreateMessagePayload = {
-  title: string;
-  address: string;
-  file: File | null;
-};
-
 const initialState: Auth = {
   data: {
     user: {} as User,
@@ -62,30 +56,6 @@ export const deleteToken = createAsyncThunk(
         token,
       });
       dispatch(setUser(response.data));
-    } catch (error: any) {
-      throw new Error(error.response.data.message);
-    }
-  }
-);
-
-export const testCreateMessages = createAsyncThunk(
-  "auth/testCreateMessages",
-  async (
-    payload: CreateMessagePayload,
-    { dispatch, getState }: { dispatch: any; getState: () => RootState } // TODO: to fix TS error
-  ) => {
-    try {
-      const state = getState();
-      const { token } = state.auth.data.user;
-
-      const response = await fetchWithResponse(
-        "/api/docsmit/message/new",
-        "POST",
-        {
-          token,
-          ...payload,
-        }
-      );
     } catch (error: any) {
       throw new Error(error.response.data.message);
     }
