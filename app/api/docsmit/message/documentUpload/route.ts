@@ -4,27 +4,80 @@ import {
   getDocsmitEndpoint,
   transformPayload,
 } from "@/app/_utils/restClient";
-import { convertBase64ToBuffer, convertBase64ToBlob } from "@/app/_helpers/utils";
+import {
+  convertBase64ToBuffer,
+  convertBase64ToBlob,
+} from "@/app/_helpers/utils";
+import { writeFile } from "fs/promises";
+import { join } from "path";
+
+const fs = require("fs");
+
+// export async function POST(request: Request) {
+//   try {
+//     const body = await request.json();
+//     const { payload, token } = transformPayload(body);
+
+//     const fileBlob = convertBase64ToBlob(payload.fileAttachment);
+//     const formData = new FormData();
+//     formData.append('file', fileBlob, payload.fileName);
+
+//     // @TODO: To handle elegantly
+//     if (!token) {
+//       return new NextResponse("Unauthorized", { status: 401 });
+//     }
+
+//     const data = await multiPartFormPostWithResponse(
+//       getDocsmitEndpoint(`messages/${payload.messageID}/upload`),
+//       formData,
+//       token
+//     );
+
+//     return NextResponse.json({
+//       data,
+//     });
+//   } catch (e: any) {
+//     console.log("upload error - ", e);
+//     return new NextResponse(e.errors, { status: 401 });
+//   }
+// }
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { payload, token } = transformPayload(body);
+    const data = await request.formData();
+    const file: File = data.get("file") as File;
+    const token = data.get("token") as string;
+    const messageID = data.get("messageID");
 
-    const fileBlob = convertBase64ToBlob(payload.fileAttachment);
+    // Method 1
+    //   const response = await multiPartFormPostWithResponse(
+    //     getDocsmitEndpoint(`messages/${messageID}/upload`),
+    //     data,
+    //     token
+    //   );
+
+    //   console.log("response - ", response);
+
+    // const token = data.get('token')
+    // const messageID = data.get('messageID');
+
+    // Method 2
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const path = join("/tmp", file.name);
+    await writeFile(path, buffer);
+
+    const fileStream = fs.createReadStream(path);
     const formData = new FormData();
-    formData.append('file', fileBlob, payload.fileName);
+    formData.append("file", fileStream);
 
-    // @TODO: To handle elegantly
-    if (!token) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    const data = await multiPartFormPostWithResponse(
-      getDocsmitEndpoint(`messages/${payload.messageID}/upload`),
+    const response = await multiPartFormPostWithResponse(
+      getDocsmitEndpoint(`messages/${messageID}/upload`),
       formData,
       token
     );
+
+    console.log("response - ", response);
 
     return NextResponse.json({
       data,

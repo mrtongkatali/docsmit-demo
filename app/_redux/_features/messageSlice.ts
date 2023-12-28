@@ -1,8 +1,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { convertFileToBase64 } from "@/app/_helpers/utils";
-import {
-  fetchWithResponse,
-} from "@/app/_utils/restClient";
+import { fetchWithResponse } from "@/app/_utils/restClient";
 import { RootState } from "../store";
 
 export type CreateMessagePayload = {
@@ -54,24 +52,34 @@ export const createMessage = createAsyncThunk(
       const messageID = response.data.messageID;
 
       if (payload.file) {
-        const fileAttachment = await convertFileToBase64(payload.file);
-        console.log("fileAttachment - ", fileAttachment);
-        const newPayload = {
-          token,
-          messageID,
-          fileName: payload.file.name,
-          mimeType: payload.file.type,
-          fileAttachment,
-        }
+        // const fileAttachment = await convertFileToBase64(payload.file);
+        // console.log("fileAttachment - ", fileAttachment);
+        // const newPayload = {
+        //   token,
+        //   messageID,
+        //   fileName: payload.file.name,
+        //   mimeType: payload.file.type,
+        //   fileAttachment,
+        // }
 
-        const fileUploadResponse = await fetchWithResponse(
-          "/api/docsmit/message/documentUpload",
-          "POST",
-          newPayload,
-          token
-        );
+        // const fileUploadResponse = await fetchWithResponse(
+        //   "/api/docsmit/message/documentUpload",
+        //   "POST",
+        //   newPayload,
+        //   token
+        // );
 
-        console.log("fileUploadResponse from slice - ", fileUploadResponse);
+        // console.log("fileUploadResponse from slice - ", fileUploadResponse);
+
+        const data = new FormData();
+        data.set("file", payload.file, payload.file.name);
+        data.set("token", token);
+        data.set("messageID", messageID);
+
+        const response = await fetch("/api/docsmit/message/documentUpload", {
+          method: "POST",
+          body: data,
+        });
       }
 
       setTimeout(() => {

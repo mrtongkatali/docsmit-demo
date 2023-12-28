@@ -107,7 +107,7 @@ export const multiPartFormPostWithResponse = async (
       "Content-Type": "multipart/form-data",
       ...additionalHeader,
     },
-    body: requestBody ? requestBody : undefined,
+    body: requestBody,
   });
 
   if (!response.ok) {
