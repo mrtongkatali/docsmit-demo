@@ -14,6 +14,7 @@ export async function GET() {
 
     const payload = {
       email,
+      // @TODO: To investigate. For some reason, docsmit /token endpoint works only once even passing correct encoded password
       // password: createHash('sha512').update(rawPassword).digest('hex'),
       password:
         "f5a23e5066e4552f0484f56d0a0f6831151bd829cfdd895dea1ce0524d76a44e4bfa47f04b43cdc08027f9a66bab0766cf8ef316dfeb92d7e8c09035d7c3a822",

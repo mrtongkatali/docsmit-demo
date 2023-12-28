@@ -52,6 +52,7 @@ export const createMessage = createAsyncThunk(
       const messageID = response.data.messageID;
 
       if (payload.file) {
+        // DEBUGGING
         // const fileAttachment = await convertFileToBase64(payload.file);
         // console.log("fileAttachment - ", fileAttachment);
         // const newPayload = {
