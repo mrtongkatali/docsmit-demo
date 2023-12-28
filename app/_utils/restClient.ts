@@ -68,8 +68,6 @@ export const fetchWithResponse = async (
   token?: string
 ): Promise<any> => {
   try {
-    console.log("[DEBUG] REQUEST HEADER - ", injectCustomHeader(token));
-
     const response = await fetch(url, {
       method,
       headers: injectCustomHeader(token),
@@ -100,7 +98,7 @@ export const multiPartFormPostWithResponse = async (
       Authorization: "Basic " + Buffer.from(`${token}:`).toString("base64"),
     };
   }
-  console.log("[DEBUG] REQUEST BODY - ", requestBody, additionalHeader);
+
   const response = await fetch(url, {
     method: "POST",
     headers: {

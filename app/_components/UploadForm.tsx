@@ -53,8 +53,8 @@ export default function UploadForm() {
 
   const formik = useFormik({
     initialValues: {
-      title: "123",
-      address: "123",
+      title: "",
+      address: "",
       file: null,
     },
     validationSchema,
