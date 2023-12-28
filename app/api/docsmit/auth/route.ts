@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 // import { createHash } from "crypto"
-import { getDocsmitEndpoint, fetchWithResponse } from "@/app/_utils/restClient";
+import {
+  getDocsmitEndpoint,
+  fetchWithResponse,
+  transformPayload,
+} from "@/app/_utils/restClient";
 
 export async function GET() {
   try {
@@ -10,6 +14,7 @@ export async function GET() {
 
     const payload = {
       email,
+      // @TODO: To investigate. For some reason, docsmit /token endpoint works only once even passing correct encoded password
       // password: createHash('sha512').update(rawPassword).digest('hex'),
       password:
         "f5a23e5066e4552f0484f56d0a0f6831151bd829cfdd895dea1ce0524d76a44e4bfa47f04b43cdc08027f9a66bab0766cf8ef316dfeb92d7e8c09035d7c3a822",
@@ -30,11 +35,13 @@ export async function GET() {
   }
 }
 
-export async function DELETE(req: Request) {
+export async function DELETE(request: Request) {
   try {
-    const request = await req.json();
+    const body = await request.json();
+    const { token } = transformPayload(body);
 
-    if (!request.token) {
+    // @TODO: To handle elegantly
+    if (!token) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -43,7 +50,7 @@ export async function DELETE(req: Request) {
       getDocsmitEndpoint("token"),
       "DELETE",
       { softwareID },
-      request.token
+      token
     );
 
     return NextResponse.json({
