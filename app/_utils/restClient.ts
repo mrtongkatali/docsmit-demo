@@ -116,12 +116,3 @@ export const multiPartFormPostWithResponse = async (
 
   return validateResponse(rawResponse);
 };
-
-export async function multipar11tFormPost(request: Request) {
-  const formData = await request.formData();
-
-  const response = await fetch("YOUR_API_ENDPOINT", {
-    method: "POST",
-    body: formData,
-  });
-}
