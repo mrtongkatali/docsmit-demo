@@ -30,11 +30,11 @@ const initialState: InitialState = {
   error: null,
 };
 
-export const testCreateMessages = createAsyncThunk(
-  "auth/testCreateMessages",
+export const createMessage = createAsyncThunk(
+  "message/createMessage",
   async (
     payload: CreateMessagePayload,
-    { dispatch, getState }: { dispatch: any; getState: () => RootState } // TODO: to fix TS error
+    { dispatch, getState, thunkAPI }: { dispatch: any; getState: () => RootState, thunkAPI: any; } // @TODO: to fix TS error
   ) => {
     try {
       const state = getState();
@@ -55,9 +55,10 @@ export const testCreateMessages = createAsyncThunk(
 
       setTimeout(() => {
         dispatch(setFileIsLoading(false));
-      }, 7000)
+      }, 300)
+
     } catch (error: any) {
-      throw new Error(error.response.data.message);
+      return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
@@ -75,15 +76,15 @@ export const message = createSlice({
     }
   },
   extraReducers: (builder) => {
-    builder.addCase(testCreateMessages.pending, (state) => {
+    builder.addCase(createMessage.pending, (state) => {
       state.loading = true;
     });
 
-    builder.addCase(testCreateMessages.fulfilled, (state) => {
+    builder.addCase(createMessage.fulfilled, (state) => {
       state.loading = false;
     });
 
-    builder.addCase(testCreateMessages.rejected, (state) => {
+    builder.addCase(createMessage.rejected, (state) => {
       state.loading = false;
     });
   },

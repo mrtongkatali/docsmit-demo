@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { RootState } from "../_redux/store";
 import { useAppDispatch, useAppSelector } from "../_utils/useTypedSelector";
@@ -5,10 +6,12 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import {
   CreateMessagePayload,
-  testCreateMessages,
+  createMessage,
 } from "../_redux/_features/messageSlice";
 
 export default function UploadForm() {
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+
   const dispatch = useAppDispatch();
   const { auth, message } = useAppSelector((state: RootState) => state);
   const { user } = auth.data;
@@ -33,6 +36,7 @@ export default function UploadForm() {
     },
     onDrop: (files) => {
       formik.setFieldValue("file", files[0]);
+      setUploadedFiles(files)
     },
     disabled: isFileLoading || loading
   });
@@ -52,7 +56,7 @@ export default function UploadForm() {
       file: null,
     },
     validationSchema,
-    onSubmit: (values: CreateMessagePayload) => {
+    onSubmit: async (values: CreateMessagePayload, { resetForm, setFieldValue }) => {
       const payload = {
         // Assumed values
         rtnOrganization: "Studio Corsair",
@@ -63,7 +67,20 @@ export default function UploadForm() {
         // Required
         ...values,
       };
-      dispatch(testCreateMessages(payload));
+
+      const res = await dispatch(createMessage(payload));
+
+      // @TODO: to handle elegantly
+      if (res.type !== "message/createMessage/fulfilled") {
+        alert("An error has occured! Please try again");
+        return
+      }
+
+      resetForm();
+      setFieldValue("file", null);
+      setUploadedFiles([]);
+
+      alert("Mail has been sent!")
     },
   });
 
@@ -141,10 +158,10 @@ export default function UploadForm() {
                 <p className="error-message">{formik.errors.file}</p>
               )}
               <div className="mt-2">
-                {acceptedFiles && acceptedFiles.length > 0 && (
+                {uploadedFiles && uploadedFiles.length > 0 && (
                   <>
                     <h3 className="text-black">
-                      {acceptedFiles[0].name}{" "}
+                      {uploadedFiles[0].name}{" "}
                       {
                         isFileLoading ? 
                         <span className="text-green-500">[Uploading...]</span>

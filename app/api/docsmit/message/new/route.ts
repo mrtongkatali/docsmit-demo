@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { payload, token } = transformPayload(body);
 
-    // TODO: To handle elegantly
+    // @TODO: To handle elegantly
     if (!token) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
