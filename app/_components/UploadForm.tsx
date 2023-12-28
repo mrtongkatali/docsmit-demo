@@ -10,8 +10,9 @@ import {
 
 export default function UploadForm() {
   const dispatch = useAppDispatch();
-  const authState = useAppSelector((state: RootState) => state.auth);
-  const { user } = authState.data;
+  const { auth, message } = useAppSelector((state: RootState) => state);
+  const { user } = auth.data;
+  const { isFileLoading, loading } = message;
 
   const {
     acceptedFiles,
@@ -33,6 +34,7 @@ export default function UploadForm() {
     onDrop: (files) => {
       formik.setFieldValue("file", files[0]);
     },
+    disabled: isFileLoading || loading
   });
 
   const validationSchema = yup.object().shape({
@@ -140,12 +142,19 @@ export default function UploadForm() {
               )}
               <div className="mt-2">
                 {acceptedFiles && acceptedFiles.length > 0 && (
-                  <h3 className="text-black">
-                    {acceptedFiles[0].name}{" "}
-                    <a className="ml-1 text-red-500 focus:outline-none small-link">
-                      Remove
-                    </a>
-                  </h3>
+                  <>
+                    <h3 className="text-black">
+                      {acceptedFiles[0].name}{" "}
+                      {
+                        isFileLoading ? 
+                        <span className="text-green-500">[Uploading...]</span>
+                        :
+                        <a className="ml-1 text-red-500 focus:outline-none small-link">
+                          Remove
+                        </a>
+                      }
+                    </h3>
+                  </>
                 )}
               </div>
             </div>
@@ -153,8 +162,9 @@ export default function UploadForm() {
               <button
                 type="submit"
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                disabled={isFileLoading || loading}
               >
-                Submit
+                {isFileLoading || loading ? "Processing..." : "Submit"}
               </button>
             </div>
           </form>

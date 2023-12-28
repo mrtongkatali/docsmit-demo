@@ -17,7 +17,7 @@ export type InitialState = {
     messages: Message | Message[];
   };
   loading: boolean;
-  messageUploading: boolean;
+  isFileLoading: boolean;
   error: string | null;
 };
 
@@ -26,7 +26,7 @@ const initialState: InitialState = {
     messages: {} as Message,
   },
   loading: false,
-  messageUploading: false,
+  isFileLoading: false,
   error: null,
 };
 
@@ -40,6 +40,8 @@ export const testCreateMessages = createAsyncThunk(
       const state = getState();
       const { token } = state.auth.data.user;
 
+      dispatch(setFileIsLoading(true));
+
       const response = await fetchWithResponse(
         "/api/docsmit/message/new",
         "POST",
@@ -48,6 +50,12 @@ export const testCreateMessages = createAsyncThunk(
           ...payload,
         }
       );
+
+      const messageID = response.data.messageID;
+
+      setTimeout(() => {
+        dispatch(setFileIsLoading(false));
+      }, 7000)
     } catch (error: any) {
       throw new Error(error.response.data.message);
     }
@@ -61,6 +69,10 @@ export const message = createSlice({
     //   setUser: (state, action: PayloadAction<Message>) => {
     //     state.data.messages = action.payload;
     //   },
+
+    setFileIsLoading: (state, action: PayloadAction<boolean>) => {
+      state.isFileLoading = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(testCreateMessages.pending, (state) => {
@@ -78,4 +90,4 @@ export const message = createSlice({
 });
 
 export default message.reducer;
-// export const { setUser } = message.actions;
+export const { setFileIsLoading } = message.actions;
