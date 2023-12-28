@@ -13,9 +13,12 @@ export default function UploadForm() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const dispatch = useAppDispatch();
-  const { auth, message } = useAppSelector((state: RootState) => state);
-  const { user } = auth.data;
-  const { isFileLoading, loading } = message;
+  // const { auth, message } = useAppSelector((state: RootState)...... // I'm getting console warnings if I use this. @TODO: to investigate
+  const authState = useAppSelector((state: RootState) => state.auth);
+  const messageState = useAppSelector((state: RootState) => state.message);
+
+  const { user } = authState.data;
+  const { isFileLoading, loading } = messageState;
 
   const {
     acceptedFiles,
@@ -36,9 +39,9 @@ export default function UploadForm() {
     },
     onDrop: (files) => {
       formik.setFieldValue("file", files[0]);
-      setUploadedFiles(files)
+      setUploadedFiles(files);
     },
-    disabled: isFileLoading || loading
+    disabled: isFileLoading || loading,
   });
 
   const validationSchema = yup.object().shape({
@@ -56,7 +59,10 @@ export default function UploadForm() {
       file: null,
     },
     validationSchema,
-    onSubmit: async (values: CreateMessagePayload, { resetForm, setFieldValue }) => {
+    onSubmit: async (
+      values: CreateMessagePayload,
+      { resetForm, setFieldValue }
+    ) => {
       const payload = {
         // Assumed values
         rtnOrganization: "Studio Corsair",
@@ -68,19 +74,19 @@ export default function UploadForm() {
         ...values,
       };
 
-      const res = await dispatch(createMessage(payload));
+      const response = await dispatch(createMessage(payload));
 
       // @TODO: to handle elegantly
-      if (res.type !== "message/createMessage/fulfilled") {
-        alert("An error has occured! Please try again");
-        return
+      if (response.type !== "message/createMessage/fulfilled") {
+        alert(response.error?.message);
+        return;
       }
 
       resetForm();
       setFieldValue("file", null);
       setUploadedFiles([]);
 
-      alert("Mail has been sent!")
+      alert("Mail has been sent!");
     },
   });
 
@@ -162,14 +168,13 @@ export default function UploadForm() {
                   <>
                     <h3 className="text-black">
                       {uploadedFiles[0].name}{" "}
-                      {
-                        isFileLoading ? 
+                      {isFileLoading ? (
                         <span className="text-green-500">[Uploading...]</span>
-                        :
+                      ) : (
                         <a className="ml-1 text-red-500 focus:outline-none small-link">
                           Remove
                         </a>
-                      }
+                      )}
                     </h3>
                   </>
                 )}

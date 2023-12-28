@@ -30,7 +30,7 @@ export default function Index() {
             disabled={authState.loading}
           >
             {!authState.loading
-              ? "Get the token to begin"
+              ? "Get new token to get started"
               : "Authenticating..."}
           </button>
         ) : (

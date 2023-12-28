@@ -32,15 +32,12 @@ const initialState: InitialState = {
 
 export const createMessage = createAsyncThunk(
   "message/createMessage",
-  async (
-    payload: CreateMessagePayload,
-    { dispatch, getState, thunkAPI }: { dispatch: any; getState: () => RootState, thunkAPI: any; } // @TODO: to fix TS error
-  ) => {
+  async (payload: CreateMessagePayload, thunkAPI) => {
     try {
-      const state = getState();
+      const state: RootState = thunkAPI.getState() as RootState;
       const { token } = state.auth.data.user;
 
-      dispatch(setFileIsLoading(true));
+      thunkAPI.dispatch(setFileIsLoading(true));
 
       const response = await fetchWithResponse(
         "/api/docsmit/message/new",
@@ -54,11 +51,11 @@ export const createMessage = createAsyncThunk(
       const messageID = response.data.messageID;
 
       setTimeout(() => {
-        dispatch(setFileIsLoading(false));
-      }, 300)
-
-    } catch (error: any) {
-      return thunkAPI.rejectWithValue(error.message);
+        thunkAPI.dispatch(setFileIsLoading(false));
+      }, 1500);
+    } catch (e: any) {
+      thunkAPI.dispatch(setFileIsLoading(false));
+      return thunkAPI.rejectWithValue(e.message);
     }
   }
 );
@@ -67,13 +64,9 @@ export const message = createSlice({
   name: "user",
   initialState,
   reducers: {
-    //   setUser: (state, action: PayloadAction<Message>) => {
-    //     state.data.messages = action.payload;
-    //   },
-
     setFileIsLoading: (state, action: PayloadAction<boolean>) => {
       state.isFileLoading = action.payload;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(createMessage.pending, (state) => {

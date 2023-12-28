@@ -30,10 +30,10 @@ const initialState: Auth = {
 // Actions
 export const getToken = createAsyncThunk(
   "auth/getToken",
-  async (_, { dispatch }) => {
+  async (_, thunkAPI) => {
     try {
       const response = await fetchWithResponse("/api/docsmit/auth", "GET");
-      dispatch(setUser(response.data));
+      thunkAPI.dispatch(setUser(response.data));
     } catch (error: any) {
       throw new Error(error.response.data.message);
     }
@@ -42,20 +42,17 @@ export const getToken = createAsyncThunk(
 
 export const deleteToken = createAsyncThunk(
   "auth/deleteToken",
-  async (
-    _,
-    { dispatch, getState }: { dispatch: any; getState: () => RootState } // @TODO: to fix TS error
-  ) => {
+  async (_, thunkAPI) => {
     try {
-      const state = getState();
+      const state: RootState = thunkAPI.getState() as RootState;
       const { token } = state.auth.data.user;
 
-      dispatch(clearUser());
+      thunkAPI.dispatch(clearUser());
 
       const response = await fetchWithResponse("/api/docsmit/auth", "DELETE", {
         token,
       });
-      dispatch(setUser(response.data));
+      thunkAPI.dispatch(setUser(response.data));
     } catch (error: any) {
       throw new Error(error.response.data.message);
     }
