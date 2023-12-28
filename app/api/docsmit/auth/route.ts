@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 // import { createHash } from "crypto"
-import { getDocsmitEndpoint, fetchWithResponse } from "@/app/_utils/restClient";
+import {
+  getDocsmitEndpoint,
+  fetchWithResponse,
+  transformPayload,
+} from "@/app/_utils/restClient";
 
 export async function GET() {
   try {
@@ -30,11 +34,13 @@ export async function GET() {
   }
 }
 
-export async function DELETE(req: Request) {
+export async function DELETE(request: Request) {
   try {
-    const request = await req.json();
+    const body = await request.json();
+    const { token } = transformPayload(body);
 
-    if (!request.token) {
+    //TODO: To handle elegantly
+    if (!token) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -43,7 +49,7 @@ export async function DELETE(req: Request) {
       getDocsmitEndpoint("token"),
       "DELETE",
       { softwareID },
-      request.token
+      token
     );
 
     return NextResponse.json({

@@ -1,9 +1,14 @@
 export type RequestMethod = "GET" | "POST" | "DELETE";
 
+export type PayloadWithToken<T> = {
+  payload: T;
+  token: string;
+};
+
 export type CustomRequestHeaders = {
   "Content-Type": string;
   Authorization?: string;
-  // To define others once needed
+  // To define others once needed, leave as-is for now
 };
 
 export const DOCSMIT_API_ENDPOINT: string =
@@ -38,6 +43,22 @@ export const injectCustomHeader = (token?: string) => {
     ...defaultHeader,
     ...authHeader,
   };
+};
+
+export const transformPayload = (payload: any): PayloadWithToken<any> => {
+  let token = "";
+
+  if (payload.token) {
+    token = payload.token;
+    delete payload.token;
+  }
+
+  const newPayload = {
+    payload,
+    token,
+  };
+
+  return newPayload;
 };
 
 export const fetchWithResponse = async (

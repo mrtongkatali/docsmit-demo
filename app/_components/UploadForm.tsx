@@ -1,11 +1,15 @@
-import { useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { RootState } from "../_redux/store";
-import { useAppSelector } from "../_utils/useTypedSelector";
+import { useAppDispatch, useAppSelector } from "../_utils/useTypedSelector";
 import * as yup from "yup";
 import { useFormik } from "formik";
+import {
+  CreateMessagePayload,
+  testCreateMessages,
+} from "../_redux/_features/authSlice";
 
 export default function UploadForm() {
+  const dispatch = useAppDispatch();
   const authState = useAppSelector((state: RootState) => state.auth);
   const { user } = authState.data;
 
@@ -46,9 +50,18 @@ export default function UploadForm() {
       file: null,
     },
     validationSchema,
-    onSubmit: (values) => {
-      // Handle form submission
-      console.log("Form data:", values);
+    onSubmit: (values: CreateMessagePayload) => {
+      const payload = {
+        // Assumed values
+        rtnOrganization: "Studio Corsair",
+        rtnAddress1: "1234 Main St.",
+        rtnState: "NJ",
+        rtnZip: "12345-1234",
+
+        // Required
+        ...values,
+      };
+      dispatch(testCreateMessages(payload));
     },
   });
 
@@ -98,6 +111,12 @@ export default function UploadForm() {
               )}
             </div>
             <div className="mb-4">
+              <label
+                htmlFor="title"
+                className="block text-gray-700 font-bold mb-2"
+              >
+                Document <span className="error-message">*</span>
+              </label>
               <div className="border border-dashed border-gray-400 rounded-md p-4 text-center">
                 <div
                   {...getRootProps({
@@ -120,9 +139,14 @@ export default function UploadForm() {
                 <p className="error-message">{formik.errors.file}</p>
               )}
               <div className="mt-2">
-              {acceptedFiles && acceptedFiles.length > 0 && (
-                <h3 className="text-black">{acceptedFiles[0].name} <a className="ml-1 text-red-500 focus:outline-none small-link">Remove</a></h3>
-              )}
+                {acceptedFiles && acceptedFiles.length > 0 && (
+                  <h3 className="text-black">
+                    {acceptedFiles[0].name}{" "}
+                    <a className="ml-1 text-red-500 focus:outline-none small-link">
+                      Remove
+                    </a>
+                  </h3>
+                )}
               </div>
             </div>
             <div className="flex items-center justify-center">
