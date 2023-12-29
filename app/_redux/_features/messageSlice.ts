@@ -11,6 +11,10 @@ export type CreateMessagePayload = {
 
 export type Message = {
   messageId: number;
+  title: string;
+  totalRecipientsCount: number;
+  from: number;
+  accepted: Date;
 };
 
 export type InitialState = {
@@ -24,12 +28,27 @@ export type InitialState = {
 
 const initialState: InitialState = {
   data: {
-    messages: {} as Message,
+    messages: {} as Message | Message[],
   },
   loading: false,
   isFileLoading: false,
   error: null,
 };
+
+export const getSentMessages = createAsyncThunk(
+  "message/getSentMessages",
+  async (_, thunkAPI) => {
+    const state: RootState = thunkAPI.getState() as RootState;
+    const { token } = state.auth.data.user;
+
+    const response = await fetchWithResponse(
+      "/api/docsmit/message/sent",
+      "POST",
+      { token }
+    );
+    thunkAPI.dispatch(setMessages(response));
+  }
+);
 
 export const createMessage = createAsyncThunk(
   "message/createMessage",
@@ -100,6 +119,9 @@ export const message = createSlice({
     setFileIsLoading: (state, action: PayloadAction<boolean>) => {
       state.isFileLoading = action.payload;
     },
+    setMessages: (state, action: PayloadAction<Message>) => {
+      state.data.messages = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(createMessage.pending, (state) => {
@@ -113,8 +135,20 @@ export const message = createSlice({
     builder.addCase(createMessage.rejected, (state) => {
       state.loading = false;
     });
+
+    builder.addCase(getSentMessages.pending, (state) => {
+      state.loading = true;
+    });
+
+    builder.addCase(getSentMessages.fulfilled, (state) => {
+      state.loading = false;
+    });
+
+    builder.addCase(getSentMessages.rejected, (state) => {
+      state.loading = false;
+    });
   },
 });
 
 export default message.reducer;
-export const { setFileIsLoading } = message.actions;
+export const { setFileIsLoading, setMessages } = message.actions;

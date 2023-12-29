@@ -7,7 +7,7 @@ import { writeFile } from "fs/promises";
 import { join } from "path";
 
 const fs = require("fs");
-const fd = require('form-data');
+const fd = require("form-data");
 
 export async function POST(request: Request) {
   try {
@@ -35,9 +35,9 @@ export async function POST(request: Request) {
     await writeFile(path, buffer);
 
     if (!fs.existsSync(path)) {
-        console.error('File not found:', path);
-        return;
-      }
+      console.error("File not found:", path);
+      return;
+    }
 
     const fileStream = fs.createReadStream(path);
     const formData = new fd();
