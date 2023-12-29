@@ -22,6 +22,12 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Result
+
+<img width="600" alt="image" src="https://github.com/mrtongkatali/docsmit-demo/assets/3377077/3cf3a257-8470-4fed-a76f-a768e3cd3e84">
+<img width="600" alt="image" src="https://github.com/mrtongkatali/docsmit-demo/assets/3377077/358e4e8d-ab20-49fa-bc33-6d3eb0ca0f19">
+
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
