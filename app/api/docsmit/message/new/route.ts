@@ -20,7 +20,6 @@ export async function POST(request: Request) {
 
     // @TODO: To handle elegantly
     if (!token) {
-      // return new NextResponse("Unauthorized", { status: 401 });
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
