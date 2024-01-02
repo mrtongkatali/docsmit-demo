@@ -1,7 +1,11 @@
 export type RequestMethod = "GET" | "POST" | "DELETE";
 
-export type PayloadWithToken<T> = {
-  payload: T;
+export type Payload = {
+  messageID?: number;
+} & Partial<Record<string, any>>;
+
+export type PayloadWithToken = {
+  payload: Payload;
   token: string;
 };
 
@@ -45,7 +49,7 @@ export const injectCustomHeader = (token?: string) => {
   };
 };
 
-export const transformPayload = (payload: any): PayloadWithToken<any> => {
+export const transformPayload = (payload: any): PayloadWithToken => {
   let token = "";
 
   if (payload.token) {
@@ -68,6 +72,7 @@ export const fetchWithResponse = async (
   token?: string
 ): Promise<any> => {
   try {
+    // console.log("headerr - ", injectCustomHeader(token));
     const response = await fetch(url, {
       method,
       headers: injectCustomHeader(token),

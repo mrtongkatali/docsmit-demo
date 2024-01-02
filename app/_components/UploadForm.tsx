@@ -68,6 +68,23 @@ export default function UploadForm() {
         rtnAddress1: "1234 Main St.",
         rtnState: "NJ",
         rtnZip: "12345-1234",
+        rtnCity: "Jersey City",
+        billTo: "Testing",
+        physicalParties: [
+          {
+            firstName: "Foo",
+            lastName: "Bar",
+            organization: "Acme, Inc",
+            address1: values.address,
+            address2: "8th Floor",
+            city: "Jersey City",
+            state: "NJ",
+            postalCode: "07306",
+            sendType: "Certified",
+            envelope: "Flat",
+            sided: 1,
+          },
+        ],
 
         // Required
         ...values,

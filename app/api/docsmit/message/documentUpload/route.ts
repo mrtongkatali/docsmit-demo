@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     // @NOTE: For some reasons, multi-part/form upload doesn't work properly in node-fetch, use axios client for this particular instance
     const response = await axios(config);
 
-    await fs.unlink(path);
+    fs.unlink(path, () => {});
 
     return NextResponse.json({
       data: response.data,

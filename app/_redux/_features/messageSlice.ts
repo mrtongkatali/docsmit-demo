@@ -73,36 +73,21 @@ export const createMessage = createAsyncThunk(
       const messageID = response.data.messageID;
 
       if (payload.file) {
-        // DEBUGGING
-        // const fileAttachment = await convertFileToBase64(payload.file);
-        // console.log("fileAttachment - ", fileAttachment);
-        // const newPayload = {
-        //   token,
-        //   messageID,
-        //   fileName: payload.file.name,
-        //   mimeType: payload.file.type,
-        //   fileAttachment,
-        // }
+        const fd = new FormData();
+        fd.set("file", payload.file, payload.file.name);
+        fd.set("token", token);
+        fd.set("messageID", messageID);
 
-        // const fileUploadResponse = await fetchWithResponse(
-        //   "/api/docsmit/message/documentUpload",
-        //   "POST",
-        //   newPayload,
-        //   token
-        // );
-
-        // console.log("fileUploadResponse from slice - ", fileUploadResponse);
-
-        const data = new FormData();
-        data.set("file", payload.file, payload.file.name);
-        data.set("token", token);
-        data.set("messageID", messageID);
-
-        const response = await fetch("/api/docsmit/message/documentUpload", {
+        await fetch("/api/docsmit/message/documentUpload", {
           method: "POST",
-          body: data,
+          body: fd,
         });
       }
+
+      await fetchWithResponse("/api/docsmit/message/send", "POST", {
+        token,
+        messageID,
+      });
 
       setTimeout(() => {
         thunkAPI.dispatch(setFileIsLoading(false));
