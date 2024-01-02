@@ -1,7 +1,11 @@
 export type RequestMethod = "GET" | "POST" | "DELETE";
 
-export type PayloadWithToken<T> = {
-  payload: T;
+export type Payload = {
+  messageID?: number;
+} & Partial<Record<string, any>>;
+
+export type PayloadWithToken = {
+  payload: Payload;
   token: string;
 };
 
@@ -45,7 +49,7 @@ export const injectCustomHeader = (token?: string) => {
   };
 };
 
-export const transformPayload = (payload: any): PayloadWithToken<any> => {
+export const transformPayload = (payload: any): PayloadWithToken => {
   let token = "";
 
   if (payload.token) {
@@ -67,21 +71,18 @@ export const fetchWithResponse = async (
   payload?: any,
   token?: string
 ): Promise<any> => {
-  try {
-    const response = await fetch(url, {
-      method,
-      headers: injectCustomHeader(token),
-      body: payload ? JSON.stringify(payload) : undefined,
-    });
+  const response = await fetch(url, {
+    method,
+    headers: injectCustomHeader(token),
+    body: payload ? JSON.stringify(payload) : undefined,
+  });
 
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
+  const rawResponse = await response.text();
+  const parsedResponse = validateResponse(rawResponse);
 
-    const rawResponse = await response.text();
-
-    return validateResponse(rawResponse);
-  } catch (e) {
-    throw new Error(e.message);
+  if (!response.ok) {
+    throw new Error(parsedResponse.message || response.statusText);
   }
+
+  return parsedResponse;
 };

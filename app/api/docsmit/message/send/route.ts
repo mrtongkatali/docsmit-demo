@@ -6,27 +6,22 @@ import {
 } from "@/app/_utils/restClient";
 import * as yup from "yup";
 
-const createNewMessageSchema = yup.object().shape({
-  title: yup.string().required("Title is required"),
-  address: yup.string().required("Address is required"),
-});
-
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { payload, token } = transformPayload(body);
 
-    await createNewMessageSchema.validate(payload, { abortEarly: true });
-
     // @TODO: To handle elegantly
     if (!token) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const data = await fetchWithResponse(
-      getDocsmitEndpoint("messages/new"),
+      getDocsmitEndpoint(`messages/${payload.messageID}/send`),
       "POST",
-      payload,
+      {
+        messageID: `'${payload.messageID}'`,
+      },
       token
     );
 
@@ -34,6 +29,6 @@ export async function POST(request: Request) {
       data,
     });
   } catch (e: any) {
-    return NextResponse.json({ message: e.message }, { status: 500 });
+    return new NextResponse(e.errors, { status: 401 });
   }
 }

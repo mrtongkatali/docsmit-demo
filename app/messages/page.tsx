@@ -53,22 +53,40 @@ export default function Index() {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {messages.map((message: any, index: number) => (
-            <tr key={index}>
-              <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                {message.messageID}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                {message.title}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                {message.from}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                {message.accepted}
-              </td>
-            </tr>
-          ))}
+          {messageState.isFetchingMessages && (
+            <td
+              colSpan={4}
+              className="px-6 py-4 whitespace-nowrap text-gray-500"
+            >
+              <h3>Loading...</h3>
+            </td>
+          )}
+          {!messageState.isFetchingMessages &&
+            messages.map((message: any, index: number) => (
+              <tr key={index}>
+                <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                  {message.messageID}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                  {message.title}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                  {message.from}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                  {message.accepted}
+                </td>
+              </tr>
+            ))}
+
+          {!messageState.isFetchingMessages && messages.length === 0 && (
+            <td
+              colSpan={4}
+              className="px-6 py-4 whitespace-nowrap text-gray-500"
+            >
+              <h3>No results found</h3>
+            </td>
+          )}
         </tbody>
       </table>
     </>

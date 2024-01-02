@@ -36,7 +36,6 @@ export async function POST(request: Request) {
       url: getDocsmitEndpoint(`messages/${messageID}/upload`),
       headers: {
         Authorization: "Basic " + Buffer.from(`${token}:`).toString("base64"),
-        ...formData.getHeaders(),
       },
       data: formData,
     };
@@ -44,13 +43,12 @@ export async function POST(request: Request) {
     // @NOTE: For some reasons, multi-part/form upload doesn't work properly in node-fetch, use axios client for this particular instance
     const response = await axios(config);
 
-    await fs.unlink(path);
+    fs.unlink(path, () => {});
 
     return NextResponse.json({
       data: response.data,
     });
   } catch (e: any) {
-    console.log("upload error - ", e.message);
-    return new NextResponse(e.errors, { status: 401 });
+    return NextResponse.json({ message: e.message }, { status: 500 });
   }
 }

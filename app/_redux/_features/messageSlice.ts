@@ -1,5 +1,4 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { convertFileToBase64 } from "@/app/_helpers/utils";
 import { fetchWithResponse } from "@/app/_utils/restClient";
 import { RootState } from "../store";
 
@@ -22,6 +21,7 @@ export type InitialState = {
     messages: Message | Message[];
   };
   loading: boolean;
+  isFetchingMessages: boolean;
   isFileLoading: boolean;
   error: string | null;
 };
@@ -32,6 +32,7 @@ const initialState: InitialState = {
   },
   loading: false,
   isFileLoading: false,
+  isFetchingMessages: false,
   error: null,
 };
 
@@ -73,41 +74,39 @@ export const createMessage = createAsyncThunk(
       const messageID = response.data.messageID;
 
       if (payload.file) {
-        // DEBUGGING
-        // const fileAttachment = await convertFileToBase64(payload.file);
-        // console.log("fileAttachment - ", fileAttachment);
-        // const newPayload = {
-        //   token,
-        //   messageID,
-        //   fileName: payload.file.name,
-        //   mimeType: payload.file.type,
-        //   fileAttachment,
-        // }
-
-        // const fileUploadResponse = await fetchWithResponse(
-        //   "/api/docsmit/message/documentUpload",
-        //   "POST",
-        //   newPayload,
-        //   token
-        // );
-
-        // console.log("fileUploadResponse from slice - ", fileUploadResponse);
-
-        const data = new FormData();
-        data.set("file", payload.file, payload.file.name);
-        data.set("token", token);
-        data.set("messageID", messageID);
+        const fd = new FormData();
+        fd.set("file", payload.file, payload.file.name);
+        fd.set("token", token);
+        fd.set("messageID", messageID);
 
         const response = await fetch("/api/docsmit/message/documentUpload", {
           method: "POST",
-          body: data,
+          body: fd,
         });
+
+        // @TODO: To handle axios error elegantly
+        if (response.statusText !== "OK") {
+          throw new Error(response.statusText);
+        }
       }
 
-      setTimeout(() => {
-        thunkAPI.dispatch(setFileIsLoading(false));
-      }, 1500);
+      const sendResponse = await fetchWithResponse(
+        "/api/docsmit/message/send",
+        "POST",
+        {
+          token,
+          messageID,
+        }
+      );
+
+      thunkAPI.dispatch(setFileIsLoading(false));
+      thunkAPI.dispatch(setError(""));
+
+      alert(
+        `${sendResponse.data.message}. Remaining balance - ${sendResponse.data.creditBalance}`
+      );
     } catch (e: any) {
+      thunkAPI.dispatch(setError(e.message));
       thunkAPI.dispatch(setFileIsLoading(false));
       return thunkAPI.rejectWithValue(e.message);
     }
@@ -124,6 +123,9 @@ export const message = createSlice({
     setMessages: (state, action: PayloadAction<Message | []>) => {
       state.data.messages = action.payload;
     },
+    setError: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(createMessage.pending, (state) => {
@@ -139,18 +141,18 @@ export const message = createSlice({
     });
 
     builder.addCase(getSentMessages.pending, (state) => {
-      state.loading = true;
+      state.isFetchingMessages = true;
     });
 
     builder.addCase(getSentMessages.fulfilled, (state) => {
-      state.loading = false;
+      state.isFetchingMessages = false;
     });
 
     builder.addCase(getSentMessages.rejected, (state) => {
-      state.loading = false;
+      state.isFetchingMessages = false;
     });
   },
 });
 
 export default message.reducer;
-export const { setFileIsLoading, setMessages } = message.actions;
+export const { setFileIsLoading, setMessages, setError } = message.actions;
