@@ -22,7 +22,7 @@ export const getDocsmitEndpoint = (path: string): string => {
   return `${DOCSMIT_API_ENDPOINT}/${path}`;
 };
 
-export const validateResponse = (response: string) => {
+export const parseResponse = (response: string) => {
   try {
     return JSON.parse(response);
   } catch (e) {
@@ -78,7 +78,7 @@ export const fetchWithResponse = async (
   });
 
   const rawResponse = await response.text();
-  const parsedResponse = validateResponse(rawResponse);
+  const parsedResponse = parseResponse(rawResponse);
 
   if (!response.ok) {
     throw new Error(parsedResponse.message || response.statusText);

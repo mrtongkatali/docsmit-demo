@@ -26,6 +26,7 @@ export default function UploadForm() {
     dispatch(setError(""));
   }, []);
 
+  // Dropzone
   const {
     getRootProps,
     getInputProps,
@@ -49,6 +50,7 @@ export default function UploadForm() {
     disabled: isFileLoading || loading,
   });
 
+  // Initialize form validation
   const validationSchema = yup.object().shape({
     title: yup.string().required("This is a required field"),
     address: yup.string().required("This is a required field"),
