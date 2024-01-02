@@ -85,34 +85,3 @@ export const fetchWithResponse = async (
     throw new Error(e.message);
   }
 };
-
-export const multiPartFormPostWithResponse = async (
-  url: string,
-  requestBody: FormData,
-  token?: string
-): Promise<any> => {
-  let additionalHeader = {};
-
-  if (token) {
-    additionalHeader = {
-      Authorization: "Basic " + Buffer.from(`${token}:`).toString("base64"),
-    };
-  }
-
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "multipart/form-data",
-      ...additionalHeader,
-    },
-    body: requestBody,
-  });
-
-  if (!response.ok) {
-    throw new Error(response.statusText);
-  }
-
-  const rawResponse = await response.text();
-
-  return validateResponse(rawResponse);
-};

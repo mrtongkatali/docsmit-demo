@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
-import {
-  multiPartFormPostWithResponse,
-  getDocsmitEndpoint,
-} from "@/app/_utils/restClient";
+import { getDocsmitEndpoint } from "@/app/_utils/restClient";
 import { writeFile } from "fs/promises";
 import { join } from "path";
+import axios from "axios";
 
 const fs = require("fs");
 const fd = require("form-data");
@@ -16,19 +14,6 @@ export async function POST(request: Request) {
     const token = data.get("token") as string;
     const messageID = data.get("messageID");
 
-    // Method 1
-    //   const response = await multiPartFormPostWithResponse(
-    //     getDocsmitEndpoint(`messages/${messageID}/upload`),
-    //     data,
-    //     token
-    //   );
-
-    //   console.log("response - ", response);
-
-    // const token = data.get('token')
-    // const messageID = data.get('messageID');
-
-    // Method 2
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     const path = join("/tmp", file.name);
@@ -40,22 +25,32 @@ export async function POST(request: Request) {
     }
 
     const fileStream = fs.createReadStream(path);
+
     const formData = new fd();
-    formData.append("file", fileStream);
+    formData.append("file", fileStream, {
+      filename: file.name,
+    });
 
-    const response = await multiPartFormPostWithResponse(
-      getDocsmitEndpoint(`messages/${messageID}/upload`),
-      formData,
-      token
-    );
+    const config = {
+      method: "post",
+      url: getDocsmitEndpoint(`messages/${messageID}/upload`),
+      headers: {
+        Authorization: "Basic " + Buffer.from(`${token}:`).toString("base64"),
+        ...formData.getHeaders(),
+      },
+      data: formData,
+    };
 
-    console.log("response - ", response);
+    // @NOTE: For some reasons, multi-part/form upload doesn't work properly in node-fetch, use axios client for this particular instance
+    const response = await axios(config);
+
+    await fs.unlink(path);
 
     return NextResponse.json({
-      data,
+      data: response.data,
     });
   } catch (e: any) {
-    console.log("upload error - ", e);
+    console.log("upload error - ", e.message);
     return new NextResponse(e.errors, { status: 401 });
   }
 }

@@ -36,7 +36,7 @@ export default function Index() {
         ) : (
           <>
             <h3 className="mb-5">
-              Howdy, {user.name}!
+              Howdy, {user.email}!
               <button
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-sm ml-2"
                 onClick={clearToken}

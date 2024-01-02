@@ -41,6 +41,8 @@ export const getSentMessages = createAsyncThunk(
     const state: RootState = thunkAPI.getState() as RootState;
     const { token } = state.auth.data.user;
 
+    thunkAPI.dispatch(setMessages([]));
+
     const response = await fetchWithResponse(
       "/api/docsmit/message/sent",
       "POST",
@@ -119,7 +121,7 @@ export const message = createSlice({
     setFileIsLoading: (state, action: PayloadAction<boolean>) => {
       state.isFileLoading = action.payload;
     },
-    setMessages: (state, action: PayloadAction<Message>) => {
+    setMessages: (state, action: PayloadAction<Message | []>) => {
       state.data.messages = action.payload;
     },
   },
