@@ -1,5 +1,4 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { convertFileToBase64 } from "@/app/_helpers/utils";
 import { fetchWithResponse } from "@/app/_utils/restClient";
 import { RootState } from "../store";
 
@@ -22,6 +21,7 @@ export type InitialState = {
     messages: Message | Message[];
   };
   loading: boolean;
+  isFetchingMessages: boolean;
   isFileLoading: boolean;
   error: string | null;
 };
@@ -32,6 +32,7 @@ const initialState: InitialState = {
   },
   loading: false,
   isFileLoading: false,
+  isFetchingMessages: false,
   error: null,
 };
 
@@ -124,15 +125,15 @@ export const message = createSlice({
     });
 
     builder.addCase(getSentMessages.pending, (state) => {
-      state.loading = true;
+      state.isFetchingMessages = true;
     });
 
     builder.addCase(getSentMessages.fulfilled, (state) => {
-      state.loading = false;
+      state.isFetchingMessages = false;
     });
 
     builder.addCase(getSentMessages.rejected, (state) => {
-      state.loading = false;
+      state.isFetchingMessages = false;
     });
   },
 });
