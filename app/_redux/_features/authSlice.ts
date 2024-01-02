@@ -68,7 +68,7 @@ export const user = createSlice({
       state.data.user = action.payload;
     },
     clearUser: (state) => {
-      state.data.user = initialState.data.user;
+      state = initialState;
     },
   },
   extraReducers: (builder) => {

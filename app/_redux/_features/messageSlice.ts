@@ -49,6 +49,7 @@ export const getSentMessages = createAsyncThunk(
       "POST",
       { token }
     );
+
     thunkAPI.dispatch(setMessages(response));
   }
 );
