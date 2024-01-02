@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { RootState } from "../_redux/store";
 import { useAppDispatch, useAppSelector } from "../_utils/useTypedSelector";
@@ -7,7 +7,9 @@ import { useFormik } from "formik";
 import {
   CreateMessagePayload,
   createMessage,
+  setError,
 } from "../_redux/_features/messageSlice";
+import Alert from "./Alert";
 
 export default function UploadForm() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
@@ -19,6 +21,10 @@ export default function UploadForm() {
 
   const { user } = authState.data;
   const { isFileLoading, loading } = messageState;
+
+  useEffect(() => {
+    dispatch(setError(""));
+  }, []);
 
   const {
     getRootProps,
@@ -92,17 +98,11 @@ export default function UploadForm() {
 
       const response = await dispatch(createMessage(payload));
 
-      // @TODO: to handle elegantly
-      if (response.type !== "message/createMessage/fulfilled") {
-        alert(response.error?.message);
-        return;
+      if (response.type === "message/createMessage/fulfilled") {
+        resetForm();
+        setFieldValue("file", null);
+        setUploadedFiles([]);
       }
-
-      resetForm();
-      setFieldValue("file", null);
-      setUploadedFiles([]);
-
-      alert("Mail has been sent!");
     },
   });
 
@@ -118,6 +118,7 @@ export default function UploadForm() {
           <h2 className="text-2xl font-semibold mb-4 text-center text-black">
             Mail Form
           </h2>
+          {messageState.error && <Alert message={messageState.error} />}
           <form onSubmit={formik.handleSubmit}>
             <div className="mb-4">
               <label

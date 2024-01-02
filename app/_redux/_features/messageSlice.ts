@@ -79,21 +79,34 @@ export const createMessage = createAsyncThunk(
         fd.set("token", token);
         fd.set("messageID", messageID);
 
-        await fetch("/api/docsmit/message/documentUpload", {
+        const response = await fetch("/api/docsmit/message/documentUpload", {
           method: "POST",
           body: fd,
         });
+
+        // @TODO: To handle axios error elegantly
+        if (response.statusText !== "OK") {
+          throw new Error(response.statusText);
+        }
       }
 
-      await fetchWithResponse("/api/docsmit/message/send", "POST", {
-        token,
-        messageID,
-      });
+      const sendResponse = await fetchWithResponse(
+        "/api/docsmit/message/send",
+        "POST",
+        {
+          token,
+          messageID,
+        }
+      );
 
-      setTimeout(() => {
-        thunkAPI.dispatch(setFileIsLoading(false));
-      }, 1500);
+      thunkAPI.dispatch(setFileIsLoading(false));
+      thunkAPI.dispatch(setError(""));
+
+      alert(
+        `${sendResponse.data.message}. Remaining balance - ${sendResponse.data.creditBalance}`
+      );
     } catch (e: any) {
+      thunkAPI.dispatch(setError(e.message));
       thunkAPI.dispatch(setFileIsLoading(false));
       return thunkAPI.rejectWithValue(e.message);
     }
@@ -109,6 +122,9 @@ export const message = createSlice({
     },
     setMessages: (state, action: PayloadAction<Message | []>) => {
       state.data.messages = action.payload;
+    },
+    setError: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -139,4 +155,4 @@ export const message = createSlice({
 });
 
 export default message.reducer;
-export const { setFileIsLoading, setMessages } = message.actions;
+export const { setFileIsLoading, setMessages, setError } = message.actions;

@@ -71,22 +71,18 @@ export const fetchWithResponse = async (
   payload?: any,
   token?: string
 ): Promise<any> => {
-  try {
-    // console.log("headerr - ", injectCustomHeader(token));
-    const response = await fetch(url, {
-      method,
-      headers: injectCustomHeader(token),
-      body: payload ? JSON.stringify(payload) : undefined,
-    });
+  const response = await fetch(url, {
+    method,
+    headers: injectCustomHeader(token),
+    body: payload ? JSON.stringify(payload) : undefined,
+  });
 
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
+  const rawResponse = await response.text();
+  const parsedResponse = validateResponse(rawResponse);
 
-    const rawResponse = await response.text();
-
-    return validateResponse(rawResponse);
-  } catch (e) {
-    throw new Error(e.message);
+  if (!response.ok) {
+    throw new Error(parsedResponse.message || response.statusText);
   }
+
+  return parsedResponse;
 };

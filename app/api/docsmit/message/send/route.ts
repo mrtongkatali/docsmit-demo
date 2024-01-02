@@ -11,10 +11,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { payload, token } = transformPayload(body);
 
-    // // @TODO: To handle elegantly
-    // if (!token) {
-    //   return new NextResponse("Unauthorized", { status: 401 });
-    // }
+    // @TODO: To handle elegantly
+    if (!token) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
 
     const data = await fetchWithResponse(
       getDocsmitEndpoint(`messages/${payload.messageID}/send`),
@@ -29,7 +29,6 @@ export async function POST(request: Request) {
       data,
     });
   } catch (e: any) {
-    console.log("send - ", e);
     return new NextResponse(e.errors, { status: 401 });
   }
 }

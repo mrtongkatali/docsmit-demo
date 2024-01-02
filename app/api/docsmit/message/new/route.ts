@@ -20,7 +20,8 @@ export async function POST(request: Request) {
 
     // @TODO: To handle elegantly
     if (!token) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      // return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const data = await fetchWithResponse(
@@ -34,7 +35,6 @@ export async function POST(request: Request) {
       data,
     });
   } catch (e: any) {
-    console.log("new - ", e);
-    return new NextResponse(e.errors, { status: 401 });
+    return NextResponse.json({ message: e.message }, { status: 500 });
   }
 }
