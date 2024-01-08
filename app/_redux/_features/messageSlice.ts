@@ -18,7 +18,7 @@ export type Message = {
 
 export type InitialState = {
   data: {
-    messages: Message | Message[];
+    messages: Message[];
   };
   loading: boolean;
   isFetchingMessages: boolean;
@@ -28,7 +28,7 @@ export type InitialState = {
 
 const initialState: InitialState = {
   data: {
-    messages: {} as Message | Message[],
+    messages: [] as Message[],
   },
   loading: false,
   isFileLoading: false,
@@ -121,7 +121,7 @@ export const message = createSlice({
     setFileIsLoading: (state, action: PayloadAction<boolean>) => {
       state.isFileLoading = action.payload;
     },
-    setMessages: (state, action: PayloadAction<Message | []>) => {
+    setMessages: (state, action: PayloadAction<Message[]>) => {
       state.data.messages = action.payload;
     },
     setError: (state, action: PayloadAction<string>) => {

@@ -73,7 +73,8 @@ export default function Index() {
               )}
             </tr>
 
-            {!messageState?.isFetchingMessages &&
+            {!messageState.isFetchingMessages &&
+              messages.length > 0 &&
               messages.map((message: any, index: number) => (
                 <tr key={index}>
                   <td className="px-6 py-4 whitespace-nowrap text-gray-500">
