@@ -28,7 +28,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 <img width="600" alt="image" src="https://github.com/mrtongkatali/docsmit-demo/assets/3377077/3cf3a257-8470-4fed-a76f-a768e3cd3e84">
 <img width="600" alt="image" src="https://github.com/mrtongkatali/docsmit-demo/assets/3377077/358e4e8d-ab20-49fa-bc33-6d3eb0ca0f19">
 <img width="600" alt="image" src="https://github.com/mrtongkatali/docsmit-demo/assets/3377077/c3acf89b-ce22-4607-983a-736bfc452c09">
-<img width="600" alt="image" src="https://github.com/mrtongkatali/docsmit-demo/assets/3377077/bfe052af-41f5-4c12-838a-a741b74ad51c">
+<img width="600" alt="image" src="https://github.com/mrtongkatali/docsmit-demo/assets/3377077/810b3c41-bdae-4bf3-96da-36b7f593e8b6">
+
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
