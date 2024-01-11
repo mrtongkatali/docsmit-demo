@@ -15,7 +15,6 @@ export async function GET() {
     const payload = {
       email,
       password: createHash("sha512").update(rawPassword).digest("hex"),
-      // password: rawPassword,
       softwareID,
     };
 

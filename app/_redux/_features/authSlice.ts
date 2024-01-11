@@ -48,11 +48,10 @@ export const deleteToken = createAsyncThunk(
       const { token } = state.auth.data.user;
 
       thunkAPI.dispatch(clearUser());
-
-      const response = await fetchWithResponse("/api/docsmit/auth", "DELETE", {
+      thunkAPI.dispatch(setUser({}));
+      await fetchWithResponse("/api/docsmit/auth", "DELETE", {
         token,
       });
-      thunkAPI.dispatch(setUser(response.data));
     } catch (error: any) {
       throw new Error(error.response.data.message);
     }

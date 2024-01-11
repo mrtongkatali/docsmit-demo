@@ -15,7 +15,6 @@ export default function UploadForm() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const dispatch = useAppDispatch();
-  // const { auth, message } = useAppSelector((state: RootState)...... // I'm getting console warnings if I use this. @TODO: to investigate
   const authState = useAppSelector((state: RootState) => state.auth);
   const messageState = useAppSelector((state: RootState) => state.message);
 
